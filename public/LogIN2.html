@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniConnect Auth</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Segoe UI', sans-serif;
+}
+
+body{
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+background:#f7f7f4;
+
+background-image:
+linear-gradient(#e5e5e5 1px, transparent 1px),
+linear-gradient(90deg,#e5e5e5 1px, transparent 1px);
+
+background-size:40px 40px;
+}
+
+/* MAIN CONTAINER */
+
+.container{
+width:850px;
+display:flex;
+background:white;
+border-radius:12px;
+overflow:hidden;
+box-shadow:0 10px 40px rgba(0,0,0,0.1);
+}
+
+/* LEFT PANEL */
+
+.left{
+flex:1;
+background:#0d1b2a;
+color:white;
+padding:50px;
+display:flex;
+flex-direction:column;
+justify-content:center;
+}
+
+.left h1{
+font-size:38px;
+margin-bottom:10px;
+}
+
+.left span{
+color:#3a7d6c;
+}
+
+.left p{
+opacity:0.8;
+}
+
+/* RIGHT PANEL */
+
+.right{
+flex:1;
+padding:40px;
+}
+
+/* FORM */
+
+.form{
+display:none;
+}
+
+.form.active{
+display:block;
+}
+
+h2{
+margin-bottom:20px;
+}
+
+input{
+width:100%;
+padding:12px;
+margin-bottom:15px;
+border-radius:8px;
+border:1px solid #ddd;
+font-size:14px;
+}
+
+button{
+width:100%;
+padding:12px;
+background:#3a7d6c;
+border:none;
+border-radius:8px;
+color:white;
+font-size:16px;
+cursor:pointer;
+}
+
+button:hover{
+background:#2f6456;
+}
+
+.switch{
+margin-top:15px;
+text-align:center;
+font-size:14px;
+}
+
+.switch span{
+color:#3a7d6c;
+cursor:pointer;
+font-weight:bold;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- LEFT SIDE -->
+
+<div class="left">
+
+<h1>Uni<span>Connect</span></h1>
+
+<p>
+Connect with global researchers and students  
+to collaborate on SDG driven research.
+</p>
+
+</div>
+
+<!-- RIGHT SIDE -->
+
+<div class="right">
+
+<!-- LOGIN FORM -->
+
+<div class="form active" id="loginForm">
+
+<h2>Login</h2>
+
+<input id="loginEmail" type="email" placeholder="Email">
+
+<input id="loginPassword" type="password" placeholder="Password">
+
+<button onclick="loginUser()">Log In</button>
+
+<div class="switch">
+Don't have an account?
+<span onclick="showRegister()">Create Account</span>
+</div>
+
+</div>
+
+
+<!-- REGISTER FORM -->
+
+<div class="form" id="registerForm">
+
+<h2>Create Account</h2>
+
+<input id="name" type="text" placeholder="Full Name">
+
+<input id="email" type="email" placeholder="Email">
+
+<input id="password" type="password" placeholder="Password">
+
+<button onclick="registerUser()">Create Account</button>
+
+<div class="switch">
+Already have an account?
+<span onclick="showLogin()">Login</span>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* SWITCH FORMS */
+
+function showRegister(){
+document.getElementById("loginForm").classList.remove("active");
+document.getElementById("registerForm").classList.add("active");
+}
+
+function showLogin(){
+document.getElementById("registerForm").classList.remove("active");
+document.getElementById("loginForm").classList.add("active");
+}
+
+
+/* REGISTER USER */
+
+async function registerUser(){
+
+const name = document.getElementById("name").value;
+const email = document.getElementById("email").value;
+const password = document.getElementById("password").value;
+
+const res = await fetch("/register",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+name,
+email,
+password
+})
+
+});
+
+const data = await res.json();
+
+if(data.status === "registered"){
+
+alert("Account created successfully!");
+showLogin();
+
+}else if(data.status === "exists"){
+
+alert("User already exists");
+
+}else{
+
+alert("Something went wrong");
+
+}
+
+}
+
+
+/* LOGIN USER */
+
+async function loginUser(){
+
+const email = document.getElementById("loginEmail").value;
+const password = document.getElementById("loginPassword").value;
+
+const res = await fetch("/login",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+email,
+password
+})
+
+});
+
+const data = await res.json();
+
+if(data.status === "success"){
+
+window.location.href = "dashboard.html";
+
+}else{
+
+alert("Invalid login credentials");
+
+}
+
+}
+
+</script>
+
+</body>
+</html>

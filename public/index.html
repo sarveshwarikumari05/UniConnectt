@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniConnect — SDG Research Collaboration Network</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0a0f1e;
+    --paper: #f4f1eb;
+    --sage: #3d6b5c;
+    --sage-light: #5a9e87;
+    --amber: #d4882a;
+    --amber-light: #f0aa50;
+    --sky: #2a5f8f;
+    --sky-light: #4a8fcc;
+    --coral: #c4563a;
+    --mist: #e8ede9;
+    --line: rgba(10,15,30,0.12);
+    --card-bg: #ffffff;
+    --nav-h: 72px;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    overflow-x: hidden;
+  }
+
+  /* ── NAVBAR ── */
+  nav {
+    position: fixed; top:0; left:0; right:0; z-index:999;
+    height: var(--nav-h);
+    background: rgba(244,241,235,0.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--line);
+    display: flex; align-items: center;
+    padding: 0 clamp(20px,4vw,60px);
+    gap: 32px;
+  }
+
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.35rem;
+    color: var(--ink);
+    text-decoration: none;
+    display: flex; align-items: center; gap: 10px;
+    margin-right: auto;
+  }
+  .nav-logo .logo-icon {
+    width:36px; height:36px;
+    background: var(--ink);
+    border-radius: 10px;
+    display:flex; align-items:center; justify-content:center;
+    position:relative; overflow:hidden;
+  }
+  .nav-logo .logo-icon::before {
+    content:'';
+    position:absolute;
+    width:18px; height:18px;
+    border: 2.5px solid var(--amber-light);
+    border-radius:50%;
+  }
+  .nav-logo .logo-icon::after {
+    content:'';
+    position:absolute;
+    width:8px; height:8px;
+    background: var(--sage-light);
+    border-radius:50%;
+  }
+  .nav-logo span { letter-spacing:-0.02em; }
+  .nav-logo span em { color: var(--sage); font-style:normal; }
+
+  .nav-links {
+    display: flex; align-items: center; gap: 4px;
+    list-style: none;
+  }
+  .nav-links a {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--ink);
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    transition: background 0.2s, color 0.2s;
+    opacity: 0.75;
+  }
+  .nav-links a:hover { background: rgba(10,15,30,0.07); opacity:1; }
+  .nav-links a.active { opacity:1; color: var(--sage); }
+
+  .nav-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    background: var(--sage);
+    color: #fff;
+    padding: 2px 7px;
+    border-radius: 20px;
+    vertical-align: middle;
+    margin-left: 4px;
+  }
+
+  .nav-ctas { display:flex; gap:10px; align-items:center; }
+
+  .btn-ghost {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 9px 20px;
+    border-radius: 10px;
+    border: 1.5px solid var(--line);
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-flex; align-items:center; gap:6px;
+  }
+  .btn-ghost:hover { border-color: var(--ink); background: var(--ink); color: var(--paper); }
+
+  .btn-primary {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 600;
+    padding: 10px 22px;
+    border-radius: 10px;
+    border: none;
+    background: var(--ink);
+    color: var(--paper);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-flex; align-items:center; gap:6px;
+    letter-spacing: 0.01em;
+  }
+  .btn-primary:hover { background: var(--sage); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(61,107,92,0.35); }
+
+  .btn-large {
+    font-size: 1rem;
+    padding: 14px 32px;
+    border-radius: 12px;
+  }
+
+  .nav-hamburger { display:none; background:none; border:none; cursor:pointer; padding:6px; }
+  .nav-hamburger span { display:block; width:22px; height:2px; background:var(--ink); margin:5px 0; border-radius:2px; transition:all 0.3s; }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    padding-top: var(--nav-h);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0; z-index: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 70% 50%, rgba(90,158,135,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 60% at 20% 80%, rgba(42,95,143,0.1) 0%, transparent 60%);
+  }
+
+  .hero-grid {
+    position: absolute; inset: 0; z-index: 0;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse at center, black 20%, transparent 80%);
+  }
+
+  .hero-content {
+    padding: clamp(40px,6vw,100px) clamp(20px,4vw,80px);
+    position: relative; z-index:1;
+    animation: fadeUp 0.9s cubic-bezier(0.2,0,0,1) both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(30px); }
+    to { opacity:1; transform:translateY(0); }
+  }
+
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--sage);
+    background: rgba(61,107,92,0.1);
+    border: 1px solid rgba(61,107,92,0.25);
+    padding: 6px 14px;
+    border-radius: 20px;
+    margin-bottom: 28px;
+  }
+  .hero-eyebrow::before { content:'●'; font-size:0.5rem; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.6rem, 5.5vw, 4.4rem);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin-bottom: 24px;
+  }
+  .hero h1 .line2 { color: var(--sage); }
+  .hero h1 .line3 { 
+    -webkit-text-stroke: 2px var(--ink);
+    color: transparent;
+  }
+
+  .hero-desc {
+    font-size: clamp(1rem, 1.4vw, 1.15rem);
+    line-height: 1.7;
+    color: rgba(10,15,30,0.65);
+    max-width: 520px;
+    margin-bottom: 40px;
+  }
+
+  .hero-actions { display:flex; gap:14px; flex-wrap:wrap; align-items:center; }
+
+  .hero-stats {
+    display: flex; gap: 36px;
+    margin-top: 56px;
+    padding-top: 36px;
+    border-top: 1px solid var(--line);
+  }
+  .stat-item {}
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--ink);
+  }
+  .stat-label {
+    font-size: 0.8rem;
+    color: rgba(10,15,30,0.5);
+    margin-top: 2px;
+    letter-spacing: 0.02em;
+  }
+
+  /* Hero Visual */
+  .hero-visual {
+    position: relative; z-index:1;
+    padding: 60px clamp(20px,4vw,60px) 60px 20px;
+    animation: fadeUp 0.9s 0.15s cubic-bezier(0.2,0,0,1) both;
+  }
+
+  .network-canvas {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  .network-node {
+    position: absolute;
+    border-radius: 50%;
+    display: flex; align-items:center; justify-content:center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    cursor: default;
+    transition: transform 0.3s;
+  }
+  .network-node:hover { transform: scale(1.08); z-index:10; }
+
+  .node-center {
+    width: 110px; height: 110px;
+    background: var(--ink);
+    color: var(--paper);
+    font-size: 0.85rem;
+    top:50%; left:50%;
+    transform: translate(-50%,-50%);
+    box-shadow: 0 20px 60px rgba(10,15,30,0.3);
+    z-index: 5;
+    flex-direction:column; gap:2px;
+  }
+  .node-center .node-icon { font-size:1.6rem; }
+  .node-center span { font-size:0.65rem; letter-spacing:0.08em; opacity:0.7; }
+
+  .node-a { width:78px; height:78px; background:#fff; border:2px solid rgba(61,107,92,0.3); top:8%; left:30%; font-size:0.6rem; color:var(--sage); flex-direction:column; gap:2px; box-shadow:0 8px 24px rgba(0,0,0,0.1); }
+  .node-b { width:82px; height:82px; background:var(--sage); color:#fff; font-size:0.62rem; top:12%; right:12%; flex-direction:column; gap:2px; box-shadow:0 8px 24px rgba(61,107,92,0.3); }
+  .node-c { width:70px; height:70px; background:var(--amber); color:#fff; font-size:0.58rem; top:45%; left:4%; flex-direction:column; gap:2px; box-shadow:0 8px 24px rgba(212,136,42,0.3); }
+  .node-d { width:75px; height:75px; background:#fff; border:2px solid rgba(42,95,143,0.3); top:72%; left:22%; font-size:0.58rem; color:var(--sky); flex-direction:column; gap:2px; box-shadow:0 8px 24px rgba(0,0,0,0.08); }
+  .node-e { width:80px; height:80px; background:var(--sky); color:#fff; font-size:0.6rem; top:65%; right:8%; flex-direction:column; gap:2px; box-shadow:0 8px 24px rgba(42,95,143,0.3); }
+  .node-f { width:62px; height:62px; background:var(--coral); color:#fff; font-size:0.56rem; top:30%; right:30%; flex-direction:column; gap:2px; box-shadow:0 8px 24px rgba(196,86,58,0.3); }
+
+  .node-icon { font-size:1.3rem; }
+
+  /* SVG connection lines */
+  .network-svg { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+  .net-line { stroke:rgba(10,15,30,0.1); stroke-width:1.5; stroke-dasharray:4 4; animation:dash 8s linear infinite; }
+  @keyframes dash { to { stroke-dashoffset: -100; } }
+
+  /* Floating tags */
+  .float-tag {
+    position: absolute;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--ink);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    white-space: nowrap;
+    animation: float 4s ease-in-out infinite;
+  }
+  .float-tag:nth-child(2) { animation-delay: -1.3s; }
+  .float-tag:nth-child(3) { animation-delay: -2.7s; }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+
+  .tag-sdg { top:2%; right:30%; }
+  .tag-pub { bottom:14%; left:1%; }
+  .tag-collab { bottom:3%; right:20%; }
+
+  .sdg-dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:5px; }
+
+  /* ── SECTION COMMON ── */
+  section { padding: clamp(70px,8vw,120px) clamp(20px,4vw,80px); }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--sage);
+    margin-bottom: 14px;
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+  }
+
+  .section-sub {
+    font-size: 1.05rem;
+    color: rgba(10,15,30,0.6);
+    line-height: 1.7;
+    max-width: 560px;
+  }
+
+  /* ── SDG STRIP ── */
+  .sdg-strip {
+    background: var(--ink);
+    padding: 28px clamp(20px,4vw,80px);
+    overflow: hidden;
+    position: relative;
+  }
+  .sdg-scroll-track {
+    display: flex; gap: 16px;
+    animation: scrollTrack 30s linear infinite;
+    width: max-content;
+  }
+  @keyframes scrollTrack { to { transform: translateX(-50%); } }
+  .sdg-pill {
+    display: flex; align-items:center; gap:8px;
+    padding: 8px 18px;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+    color: #fff;
+    opacity: 0.9;
+  }
+
+  /* ── FEATURES ── */
+  .features { background: var(--mist); }
+  .features-header { text-align: center; margin-bottom: 64px; }
+  .features-header .section-sub { margin: 0 auto; }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px,1fr));
+    gap: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .feature-card {
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 32px;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .feature-card::before {
+    content:'';
+    position:absolute;
+    top:0; left:0; right:0;
+    height:3px;
+    background: var(--card-accent, var(--sage));
+    transform: scaleX(0);
+    transition: transform 0.3s;
+  }
+  .feature-card:hover { transform: translateY(-4px); box-shadow: 0 20px 50px rgba(0,0,0,0.1); }
+  .feature-card:hover::before { transform: scaleX(1); }
+
+  .feature-icon {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    display:flex; align-items:center; justify-content:center;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    background: var(--icon-bg, rgba(61,107,92,0.12));
+  }
+
+  .feature-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .feature-card p { font-size: 0.9rem; color: rgba(10,15,30,0.6); line-height:1.65; }
+
+  /* ── HOW IT WORKS ── */
+  .how-it-works { max-width: 1200px; margin: 0 auto; }
+  .how-grid { display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; }
+
+  .steps-list { display:flex; flex-direction:column; gap:0; }
+
+  .step-item {
+    display:flex; gap:20px;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--line);
+    cursor:pointer;
+    transition: all 0.2s;
+  }
+  .step-item:last-child { border-bottom: none; }
+  .step-item:hover .step-num { background: var(--ink); color: var(--paper); }
+
+  .step-num {
+    width: 36px; height: 36px; flex-shrink: 0;
+    border-radius: 10px;
+    border: 1.5px solid var(--ink);
+    display:flex; align-items:center; justify-content:center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+  }
+
+  .step-body h4 {
+    font-family:'Syne',sans-serif;
+    font-weight:700;
+    font-size:1rem;
+    margin-bottom:6px;
+  }
+  .step-body p { font-size:0.875rem; color:rgba(10,15,30,0.6); line-height:1.65; }
+
+  .how-visual {
+    background: var(--ink);
+    border-radius: 24px;
+    padding: 40px;
+    color: var(--paper);
+    position: relative;
+    overflow: hidden;
+  }
+  .how-visual::before {
+    content:'';
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(ellipse at 80% 20%, rgba(90,158,135,0.2) 0%, transparent 50%),
+      radial-gradient(ellipse at 20% 80%, rgba(74,143,204,0.15) 0%, transparent 50%);
+  }
+  .how-visual-inner { position:relative; z-index:1; }
+  .code-block {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 12px;
+    padding: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    line-height: 1.8;
+    color: rgba(244,241,235,0.85);
+    margin-bottom: 20px;
+  }
+  .code-green { color: #5a9e87; }
+  .code-amber { color: #f0aa50; }
+  .code-sky { color: #4a8fcc; }
+  .code-dim { color: rgba(244,241,235,0.4); }
+
+  .project-preview {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 16px 20px;
+  }
+  .proj-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+  .proj-title { font-family:'Syne',sans-serif; font-weight:700; font-size:0.9rem; }
+  .proj-status { font-size:0.65rem; background:rgba(90,158,135,0.25); color:#5a9e87; padding:3px 10px; border-radius:20px; font-weight:600; letter-spacing:0.06em; }
+  .proj-members { display:flex; gap:6px; margin-bottom:10px; }
+  .member-ava {
+    width:28px; height:28px; border-radius:50%;
+    background: var(--col, var(--sage));
+    display:flex; align-items:center; justify-content:center;
+    font-size:0.65rem; font-weight:700; color:#fff;
+    border: 2px solid rgba(255,255,255,0.1);
+  }
+  .proj-bar { height:4px; background:rgba(255,255,255,0.1); border-radius:2px; overflow:hidden; }
+  .proj-progress { height:100%; background: linear-gradient(90deg, #5a9e87, #4a8fcc); border-radius:2px; width:68%; }
+
+  /* ── RESEARCH TRACKS ── */
+  .tracks-bg { background: var(--paper); }
+  .tracks-inner { max-width: 1200px; margin:0 auto; }
+  .tracks-header { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:48px; flex-wrap:wrap; gap:20px; }
+
+  .sdg-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px,1fr));
+    gap: 16px;
+  }
+
+  .sdg-card {
+    border-radius: 14px;
+    padding: 22px;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.3s;
+    position:relative;
+    overflow:hidden;
+  }
+  .sdg-card::after {
+    content: attr(data-num);
+    position:absolute;
+    bottom:-10px; right:-5px;
+    font-family:'Syne',sans-serif;
+    font-size:4rem;
+    font-weight:800;
+    opacity:0.15;
+    line-height:1;
+  }
+  .sdg-card:hover { transform: scale(1.03); box-shadow: 0 12px 35px rgba(0,0,0,0.2); }
+  .sdg-card-icon { font-size:1.6rem; margin-bottom:10px; }
+  .sdg-card-num { font-family:'JetBrains Mono',monospace; font-size:0.68rem; opacity:0.75; margin-bottom:4px; letter-spacing:0.08em; }
+  .sdg-card-name { font-family:'Syne',sans-serif; font-weight:700; font-size:0.88rem; line-height:1.3; }
+  .sdg-card-count { margin-top:10px; font-size:0.72rem; opacity:0.8; }
+
+  /* ── PROFILES ── */
+  .profiles-bg { background: var(--mist); }
+  .profiles-inner { max-width:1200px; margin:0 auto; }
+
+  .profiles-tabs {
+    display:flex; gap:8px; margin-bottom:40px; flex-wrap:wrap;
+  }
+  .tab-btn {
+    padding: 8px 20px;
+    border-radius: 30px;
+    border: 1.5px solid var(--line);
+    background: transparent;
+    font-family:'DM Sans',sans-serif;
+    font-size:0.875rem;
+    font-weight:500;
+    cursor:pointer;
+    transition:all 0.2s;
+  }
+  .tab-btn.active, .tab-btn:hover { background:var(--ink); color:#fff; border-color:var(--ink); }
+
+  .profiles-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(240px,1fr)); gap:20px; }
+
+  .profile-card {
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 24px;
+    transition: all 0.3s;
+  }
+  .profile-card:hover { transform:translateY(-3px); box-shadow:0 12px 30px rgba(0,0,0,0.08); }
+
+  .profile-top { display:flex; gap:14px; align-items:center; margin-bottom:14px; }
+  .profile-ava {
+    width:48px; height:48px; border-radius:14px;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Syne',sans-serif; font-weight:800; font-size:1.1rem; color:#fff;
+    flex-shrink:0;
+  }
+  .profile-name { font-family:'Syne',sans-serif; font-weight:700; font-size:0.95rem; }
+  .profile-role { font-size:0.78rem; color:rgba(10,15,30,0.5); margin-top:2px; }
+  .profile-uni {
+    font-size:0.75rem; color:var(--sky); font-weight:500;
+    display:flex; align-items:center; gap:4px; margin-bottom:12px;
+  }
+  .profile-tags { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
+  .tag-chip {
+    font-size:0.68rem; font-weight:600;
+    padding:3px 9px; border-radius:20px;
+    background:rgba(61,107,92,0.1); color:var(--sage);
+    letter-spacing:0.02em;
+  }
+  .profile-footer { display:flex; justify-content:space-between; align-items:center; }
+  .profile-projects { font-size:0.75rem; color:rgba(10,15,30,0.5); }
+  .btn-connect {
+    font-size:0.75rem; font-weight:600;
+    padding:5px 14px; border-radius:8px;
+    background:transparent; border:1.5px solid var(--line);
+    cursor:pointer; transition:all 0.2s;
+    font-family:'DM Sans',sans-serif;
+  }
+  .btn-connect:hover { background:var(--sage); border-color:var(--sage); color:#fff; }
+
+  /* ── TESTIMONIALS ── */
+  .testimonials { background:var(--ink); color:var(--paper); }
+  .test-inner { max-width:1100px; margin:0 auto; }
+  .test-header { text-align:center; margin-bottom:56px; }
+  .test-header .section-label { color: var(--sage-light); }
+  .test-header .section-title { color: var(--paper); }
+
+  .test-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:24px; }
+
+  .test-card {
+    background:rgba(255,255,255,0.06);
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:16px; padding:28px;
+    transition:all 0.3s;
+  }
+  .test-card:hover { background:rgba(255,255,255,0.09); transform:translateY(-3px); }
+
+  .test-quote {
+    font-size:0.95rem; line-height:1.7;
+    color:rgba(244,241,235,0.8);
+    margin-bottom:20px;
+    font-style:italic;
+  }
+  .test-quote::before { content:'"'; font-family:'Syne',sans-serif; font-size:2rem; color:var(--sage-light); display:block; margin-bottom:8px; line-height:1; }
+
+  .test-person { display:flex; align-items:center; gap:12px; }
+  .test-ava {
+    width:42px; height:42px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Syne',sans-serif; font-weight:800; color:#fff; font-size:0.9rem;
+  }
+  .test-name { font-family:'Syne',sans-serif; font-weight:700; font-size:0.9rem; }
+  .test-detail { font-size:0.75rem; color:rgba(244,241,235,0.45); margin-top:2px; }
+
+  /* ── CTA ── */
+  .cta-section {
+    padding: 100px clamp(20px,4vw,80px);
+    background: linear-gradient(135deg, var(--sage) 0%, var(--sky) 100%);
+    text-align: center;
+    color: #fff;
+    position:relative; overflow:hidden;
+  }
+  .cta-section::before {
+    content:'';
+    position:absolute; inset:0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px);
+    background-size:40px 40px;
+  }
+  .cta-inner { position:relative; z-index:1; max-width:680px; margin:0 auto; }
+  .cta-title {
+    font-family:'Syne',sans-serif;
+    font-size:clamp(2rem,4vw,3.2rem);
+    font-weight:800;
+    letter-spacing:-0.02em;
+    margin-bottom:20px;
+  }
+  .cta-sub { font-size:1.05rem; opacity:0.85; line-height:1.7; margin-bottom:40px; }
+  .cta-btns { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
+  .btn-white {
+    font-family:'DM Sans',sans-serif; font-weight:600;
+    font-size:1rem; padding:14px 32px;
+    border-radius:12px; border:none;
+    background:#fff; color:var(--sage);
+    cursor:pointer; transition:all 0.2s;
+    text-decoration:none; display:inline-block;
+  }
+  .btn-white:hover { transform:translateY(-2px); box-shadow:0 10px 30px rgba(0,0,0,0.2); }
+  .btn-outline-white {
+    font-family:'DM Sans',sans-serif; font-weight:600;
+    font-size:1rem; padding:13px 32px;
+    border-radius:12px; border:2px solid rgba(255,255,255,0.5);
+    background:transparent; color:#fff;
+    cursor:pointer; transition:all 0.2s;
+    text-decoration:none; display:inline-block;
+  }
+  .btn-outline-white:hover { border-color:#fff; background:rgba(255,255,255,0.1); }
+
+  /* ── FOOTER ── */
+  footer {
+    background:var(--ink); color:var(--paper);
+    padding:60px clamp(20px,4vw,80px) 32px;
+  }
+  .footer-grid {
+    display:grid; grid-template-columns:2fr 1fr 1fr 1fr;
+    gap:48px; margin-bottom:56px;
+  }
+  .footer-brand .nav-logo { color:var(--paper); margin-bottom:16px; display:inline-flex; }
+  .footer-brand .nav-logo .logo-icon { background:rgba(255,255,255,0.1); }
+  .footer-desc { font-size:0.875rem; color:rgba(244,241,235,0.5); line-height:1.7; max-width:280px; }
+  .footer-col h4 { font-family:'Syne',sans-serif; font-weight:700; font-size:0.85rem; margin-bottom:16px; letter-spacing:0.04em; }
+  .footer-col ul { list-style:none; display:flex; flex-direction:column; gap:10px; }
+  .footer-col li a { font-size:0.85rem; color:rgba(244,241,235,0.5); text-decoration:none; transition:color 0.2s; }
+  .footer-col li a:hover { color:var(--paper); }
+  .footer-bottom {
+    border-top:1px solid rgba(255,255,255,0.1);
+    padding-top:28px;
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;
+  }
+  .footer-copy { font-size:0.8rem; color:rgba(244,241,235,0.35); }
+  .footer-links { display:flex; gap:20px; }
+  .footer-links a { font-size:0.8rem; color:rgba(244,241,235,0.35); text-decoration:none; }
+  .footer-links a:hover { color:var(--paper); }
+
+  /* MODAL */
+  .modal-overlay {
+    display:none; position:fixed; inset:0; z-index:2000;
+    background:rgba(10,15,30,0.7); backdrop-filter:blur(6px);
+    align-items:center; justify-content:center;
+    padding:20px;
+  }
+  .modal-overlay.open { display:flex; }
+  .modal {
+    background:var(--paper);
+    border-radius:20px;
+    width:100%; max-width:440px;
+    padding:40px;
+    position:relative;
+    animation:modalIn 0.3s cubic-bezier(0.2,0,0,1) both;
+  }
+  @keyframes modalIn { from{opacity:0;transform:scale(0.95)translateY(20px)} to{opacity:1;transform:scale(1)translateY(0)} }
+  .modal-close {
+    position:absolute; top:16px; right:16px;
+    background:none; border:none; cursor:pointer;
+    font-size:1.2rem; color:rgba(10,15,30,0.4);
+    width:32px; height:32px; display:flex; align-items:center; justify-content:center;
+    border-radius:8px; transition:all 0.2s;
+  }
+  .modal-close:hover { background:rgba(10,15,30,0.08); color:var(--ink); }
+  .modal-title { font-family:'Syne',sans-serif; font-weight:800; font-size:1.5rem; margin-bottom:6px; }
+  .modal-sub { font-size:0.875rem; color:rgba(10,15,30,0.55); margin-bottom:28px; }
+  .form-group { margin-bottom:16px; }
+  .form-group label { display:block; font-size:0.8rem; font-weight:600; margin-bottom:6px; letter-spacing:0.02em; }
+  .form-group input, .form-group select {
+    width:100%; padding:11px 14px;
+    border:1.5px solid var(--line);
+    border-radius:10px;
+    font-family:'DM Sans',sans-serif; font-size:0.9rem;
+    background:var(--card-bg); color:var(--ink);
+    transition:border-color 0.2s;
+    outline:none;
+  }
+  .form-group input:focus, .form-group select:focus { border-color:var(--sage); }
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .btn-submit { width:100%; margin-top:8px; justify-content:center; font-size:1rem; padding:13px; }
+  .modal-switch { text-align:center; margin-top:20px; font-size:0.85rem; color:rgba(10,15,30,0.55); }
+  .modal-switch a { color:var(--sage); font-weight:600; cursor:pointer; text-decoration:none; }
+  .modal-divider { display:flex; align-items:center; gap:12px; margin:20px 0; }
+  .modal-divider hr { flex:1; border:none; border-top:1px solid var(--line); }
+  .modal-divider span { font-size:0.75rem; color:rgba(10,15,30,0.4); }
+  .btn-social {
+    width:100%; padding:11px; border-radius:10px;
+    border:1.5px solid var(--line); background:#fff;
+    font-family:'DM Sans',sans-serif; font-size:0.875rem; font-weight:500;
+    cursor:pointer; transition:all 0.2s; display:flex; align-items:center; justify-content:center; gap:8px;
+    color:var(--ink);
+  }
+  .btn-social:hover { border-color:var(--ink); }
+
+  /* RESPONSIVE */
+  @media(max-width:900px) {
+    .hero { grid-template-columns:1fr; min-height:auto; }
+    .hero-visual { display:none; }
+    .how-grid { grid-template-columns:1fr; }
+    .footer-grid { grid-template-columns:1fr 1fr; }
+    .nav-links { display:none; }
+    .nav-hamburger { display:block; }
+  }
+  @media(max-width:600px) {
+    .hero-stats { gap:20px; }
+    .footer-grid { grid-template-columns:1fr; }
+    .cta-btns { flex-direction:column; align-items:center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════ NAVBAR ══════════ -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="logo-icon"></div>
+    <span>Uni<em>Connect</em></span>
+  </a>
+
+  <ul class="nav-links">
+    <li><a href="#features" class="active">Features</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#sdgs">SDG Tracks <span class="nav-badge">17</span></a></li>
+    <li><a href="#profiles">Community</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+
+  <div class="nav-ctas">
+    <a href="#" class="btn-ghost" onclick="openModal('login'); return false;">Log In</a>
+    <a href="#" class="btn-primary" onclick="openModal('register'); return false;">
+      Join Free →
+    </a>
+  </div>
+
+  <button class="nav-hamburger" onclick="toggleMenu()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- ══════════ HERO ══════════ -->
+<section class="hero" id="home">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">Global Research Network · 17 SDG Tracks</div>
+
+    <h1>
+      Where Students<br>
+      <span class="line2">Shape Tomorrow's</span><br>
+      <span class="line3">Solutions</span>
+    </h1>
+
+    <p class="hero-desc">
+      UniConnect bridges universities worldwide — enabling students and professors
+      to co-create long-term SDG research projects. Think LinkedIn meets GitHub,
+      built for academic impact.
+    </p>
+
+    <div class="hero-actions">
+      <a href="#" class="btn-primary btn-large" onclick="openModal('register'); return false;">
+        Start Collaborating →
+      </a>
+      <a href="#how" class="btn-ghost btn-large">
+        See How It Works
+      </a>
+    </div>
+
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num">12,400+</div>
+        <div class="stat-label">Researchers Joined</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">340+</div>
+        <div class="stat-label">Universities</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">1,800+</div>
+        <div class="stat-label">Active Projects</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <div class="network-canvas">
+      <svg class="network-svg" viewBox="0 0 520 520">
+        <line class="net-line" x1="260" y1="260" x2="162" y2="50"/>
+        <line class="net-line" x1="260" y1="260" x2="432" y2="72"/>
+        <line class="net-line" x1="260" y1="260" x2="42" y2="238"/>
+        <line class="net-line" x1="260" y1="260" x2="130" y2="390"/>
+        <line class="net-line" x1="260" y1="260" x2="450" y2="355"/>
+        <line class="net-line" x1="260" y1="260" x2="310" y2="160"/>
+        <line class="net-line" x1="162" y1="50" x2="432" y2="72" stroke-dasharray="3 6"/>
+        <line class="net-line" x1="130" y1="390" x2="450" y2="355" stroke-dasharray="3 6"/>
+      </svg>
+
+      <div class="network-node node-center">
+        <span class="node-icon">🌐</span>
+        <span>UniConnect</span>
+      </div>
+      <div class="network-node node-a">
+        <span class="node-icon">🎓</span>
+        <span>MIT</span>
+      </div>
+      <div class="network-node node-b">
+        <span class="node-icon">🔬</span>
+        <span>Oxford</span>
+      </div>
+      <div class="network-node node-c">
+        <span class="node-icon">🌱</span>
+        <span>SDG 13</span>
+      </div>
+      <div class="network-node node-d">
+        <span class="node-icon">💡</span>
+        <span>IIT Delhi</span>
+      </div>
+      <div class="network-node node-e">
+        <span class="node-icon">📊</span>
+        <span>NUS</span>
+      </div>
+      <div class="network-node node-f">
+        <span class="node-icon">🤝</span>
+        <span>ETH</span>
+      </div>
+
+      <div class="float-tag tag-sdg"><span class="sdg-dot" style="background:#3d6b5c"></span>SDG-7 Clean Energy</div>
+      <div class="float-tag tag-pub">📄 12 Publications</div>
+      <div class="float-tag tag-collab">🔗 247 Collaborations</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ SDG STRIP ══════════ -->
+<div class="sdg-strip">
+  <div class="sdg-scroll-track" id="sdgTrack">
+    <!-- duplicated for infinite loop -->
+  </div>
+</div>
+
+<!-- ══════════ FEATURES ══════════ -->
+<section class="features" id="features">
+  <div class="features-header">
+    <div class="section-label">Platform Features</div>
+    <div class="section-title">Built for Serious Research Collaboration</div>
+    <p class="section-sub">Everything you need to find collaborators, manage projects, and publish SDG-aligned research — in one unified platform.</p>
+  </div>
+
+  <div class="features-grid">
+    <div class="feature-card" style="--card-accent:#3d6b5c; --icon-bg:rgba(61,107,92,0.12)">
+      <div class="feature-icon">🔍</div>
+      <h3>Smart Researcher Discovery</h3>
+      <p>Find co-researchers by SDG focus, university, skills, and publication history. AI-powered matching suggests ideal collaborators for your project goals.</p>
+    </div>
+    <div class="feature-card" style="--card-accent:#2a5f8f; --icon-bg:rgba(42,95,143,0.1)">
+      <div class="feature-icon">🗂️</div>
+      <h3>Project Management Hub</h3>
+      <p>Kanban boards, milestones, version-controlled documents and shared research repositories — a GitHub-inspired workspace designed for academic teams.</p>
+    </div>
+    <div class="feature-card" style="--card-accent:#d4882a; --icon-bg:rgba(212,136,42,0.1)">
+      <div class="feature-icon">📡</div>
+      <h3>Live Research Feed</h3>
+      <p>Follow SDG tracks like you follow topics on LinkedIn. Discover ongoing projects, preprints, datasets, and open calls for collaborators across 340+ universities.</p>
+    </div>
+    <div class="feature-card" style="--card-accent:#c4563a; --icon-bg:rgba(196,86,58,0.1)">
+      <div class="feature-icon">🏛️</div>
+      <h3>Institutional Profiles</h3>
+      <p>Universities showcase their SDG research capacity. Professors list open positions. Students build verified academic portfolios reviewed by their institutions.</p>
+    </div>
+    <div class="feature-card" style="--card-accent:#3d6b5c; --icon-bg:rgba(61,107,92,0.12)">
+      <div class="feature-icon">💬</div>
+      <h3>Integrated Communication</h3>
+      <p>Threaded discussions per project, real-time messaging, video calls, and structured meeting notes — all contextualised to your research workflow.</p>
+    </div>
+    <div class="feature-card" style="--card-accent:#2a5f8f; --icon-bg:rgba(42,95,143,0.1)">
+      <div class="feature-icon">📈</div>
+      <h3>Impact Tracking Dashboard</h3>
+      <p>Quantify your SDG contribution with impact metrics, citation tracking, policy mentions, and visual reports you can share with supervisors and funders.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ HOW IT WORKS ══════════ -->
+<section id="how">
+  <div class="how-it-works">
+    <div class="how-grid">
+      <div>
+        <div class="section-label">How UniConnect Works</div>
+        <div class="section-title">From Idea to Impact in 4 Steps</div>
+        <p class="section-sub" style="margin-bottom:40px">The platform handles everything from initial matching to final publication — so your team can focus on the research.</p>
+
+        <div class="steps-list">
+          <div class="step-item">
+            <div class="step-num">01</div>
+            <div class="step-body">
+              <h4>Create Your Academic Profile</h4>
+              <p>Verify your university email, list your SDG interests, skills, and prior research. Professors can add lab openings and thesis topics.</p>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">02</div>
+            <div class="step-body">
+              <h4>Discover or Post a Project</h4>
+              <p>Browse active SDG projects or launch your own with defined goals, roles, and timelines. Open calls attract global co-researchers.</p>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">03</div>
+            <div class="step-body">
+              <h4>Collaborate in a Shared Workspace</h4>
+              <p>Use built-in tools — version control, tasks, data sharing, and discussion threads — to run your project from start to finish.</p>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">04</div>
+            <div class="step-body">
+              <h4>Publish, Measure & Grow Your Network</h4>
+              <p>Export papers, submit to journals, and track real-world SDG impact. Your contributions build a verified research portfolio.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="how-visual">
+          <div class="how-visual-inner">
+            <div class="code-block">
+<span class="code-dim">// uniconnect.config.js</span>
+<span class="code-green">project</span> = {
+  title: <span class="code-amber">"Solar Microgrids for Rural India"</span>,
+  sdg: [<span class="code-sky">7</span>, <span class="code-sky">13</span>, <span class="code-sky">1</span>],
+  universities: [<span class="code-amber">"IIT Delhi"</span>, <span class="code-amber">"ETH Zürich"</span>],
+  status: <span class="code-green">"ACTIVE"</span>,
+  openRoles: [<span class="code-amber">"Data Scientist"</span>, <span class="code-amber">"Policy Analyst"</span>]
+}
+            </div>
+
+            <div class="project-preview">
+              <div class="proj-header">
+                <span class="proj-title">🌞 Solar Microgrids — Rural India</span>
+                <span class="proj-status">● ACTIVE</span>
+              </div>
+              <div class="proj-members">
+                <div class="member-ava" style="--col:#3d6b5c">AS</div>
+                <div class="member-ava" style="--col:#2a5f8f">LM</div>
+                <div class="member-ava" style="--col:#d4882a">RK</div>
+                <div class="member-ava" style="--col:#c4563a">PW</div>
+                <div class="member-ava" style="background:rgba(255,255,255,0.15)">+8</div>
+              </div>
+              <div style="font-size:0.72rem; color:rgba(244,241,235,0.5); margin-bottom:8px;">Project Progress — 68% complete</div>
+              <div class="proj-bar"><div class="proj-progress"></div></div>
+            </div>
+
+            <div style="margin-top:20px; display:flex; gap:10px; flex-wrap:wrap;">
+              <div style="background:rgba(61,107,92,0.2); border-radius:8px; padding:10px 16px; font-size:0.75rem; color:#5a9e87; font-weight:600;">SDG 7 · Clean Energy</div>
+              <div style="background:rgba(42,95,143,0.2); border-radius:8px; padding:10px 16px; font-size:0.75rem; color:#4a8fcc; font-weight:600;">SDG 13 · Climate Action</div>
+              <div style="background:rgba(212,136,42,0.2); border-radius:8px; padding:10px 16px; font-size:0.75rem; color:#f0aa50; font-weight:600;">SDG 1 · No Poverty</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ SDG TRACKS ══════════ -->
+<section class="tracks-bg" id="sdgs">
+  <div class="tracks-inner">
+    <div class="tracks-header">
+      <div>
+        <div class="section-label">Research Tracks</div>
+        <div class="section-title">All 17 UN Sustainable<br>Development Goals</div>
+      </div>
+      <a href="#" class="btn-primary" onclick="openModal('register'); return false;">Browse All Projects →</a>
+    </div>
+
+    <div class="sdg-grid" id="sdgCardsGrid"></div>
+  </div>
+</section>
+
+<!-- ══════════ COMMUNITY PROFILES ══════════ -->
+<section class="profiles-bg" id="profiles">
+  <div class="profiles-inner">
+    <div style="margin-bottom:16px" class="section-label">Global Community</div>
+    <div class="section-title" style="margin-bottom:16px">Meet the Researchers</div>
+    <p class="section-sub" style="margin-bottom:36px">Students, postdocs, and professors from universities across 6 continents, united by SDG research goals.</p>
+
+    <div class="profiles-tabs">
+      <button class="tab-btn active">All Researchers</button>
+      <button class="tab-btn" onclick="switchTab(this)">Students</button>
+      <button class="tab-btn" onclick="switchTab(this)">Professors</button>
+      <button class="tab-btn" onclick="switchTab(this)">Postdocs</button>
+      <button class="tab-btn" onclick="switchTab(this)">Open to Collaborate</button>
+    </div>
+
+    <div class="profiles-grid" id="profilesGrid"></div>
+  </div>
+</section>
+
+<!-- ══════════ TESTIMONIALS ══════════ -->
+<section class="testimonials" id="about">
+  <div class="test-inner">
+    <div class="test-header">
+      <div class="section-label">Impact Stories</div>
+      <div class="section-title">Research That Changed Things</div>
+    </div>
+
+    <div class="test-grid">
+      <div class="test-card">
+        <p class="test-quote">UniConnect matched me with a computational biology team at Oxford. Within 8 months we published a paper on SDG 3 that's now informing WHO health policy in three countries.</p>
+        <div class="test-person">
+          <div class="test-ava" style="background:#3d6b5c">AM</div>
+          <div>
+            <div class="test-name">Aditi Mehta</div>
+            <div class="test-detail">PhD Student · IIT Bombay · SDG 3</div>
+          </div>
+        </div>
+      </div>
+      <div class="test-card">
+        <p class="test-quote">As a professor, I've supervised students across 4 continents through this platform. The project management tools are as robust as any commercial software we've used.</p>
+        <div class="test-person">
+          <div class="test-ava" style="background:#2a5f8f">JR</div>
+          <div>
+            <div class="test-name">Prof. James Rivera</div>
+            <div class="test-detail">Associate Professor · MIT · SDG 7, 9</div>
+          </div>
+        </div>
+      </div>
+      <div class="test-card">
+        <p class="test-quote">I found my thesis supervisor, three co-authors, and a grant partner through UniConnect. The SDG filtering is brilliant — it instantly connects you with people who care about the same problems.</p>
+        <div class="test-person">
+          <div class="test-ava" style="background:#d4882a">LW</div>
+          <div>
+            <div class="test-name">Lin Wei</div>
+            <div class="test-detail">MSc Student · Tsinghua University · SDG 11</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ CTA ══════════ -->
+<section class="cta-section" id="contact">
+  <div class="cta-inner">
+    <div class="cta-title">Ready to Research What Matters?</div>
+    <p class="cta-sub">Join 12,400+ researchers from 340 universities working on projects that align with the UN's 2030 SDG agenda. It's free for students and academics.</p>
+    <div class="cta-btns">
+      <a href="#" class="btn-white" onclick="openModal('register'); return false;">Create Free Account</a>
+      <a href="#" class="btn-outline-white" onclick="openModal('login'); return false;">Sign In</a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="#" class="nav-logo">
+        <div class="logo-icon"></div>
+        <span>Uni<em>Connect</em></span>
+      </a>
+      <p class="footer-desc">The global network where academic research meets real-world sustainable development. Connecting students and professors since 2023.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Platform</h4>
+      <ul>
+        <li><a href="#">Discover Projects</a></li>
+        <li><a href="#">Find Researchers</a></li>
+        <li><a href="#">SDG Explorer</a></li>
+        <li><a href="#">Institutions</a></li>
+        <li><a href="#">Funding Board</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Community</h4>
+      <ul>
+        <li><a href="#">Student Hub</a></li>
+        <li><a href="#">Professor Network</a></li>
+        <li><a href="#">Research Groups</a></li>
+        <li><a href="#">Events & Webinars</a></li>
+        <li><a href="#">Publications</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Blog</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Press</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2025 UniConnect. Built for academic impact.</span>
+    <div class="footer-links">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Cookie Policy</a>
+      <a href="#">Accessibility</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ══════════ LOGIN MODAL ══════════ -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('login')">✕</button>
+    <div class="modal-title">Welcome Back</div>
+    <div class="modal-sub">Log in to continue your research journey</div>
+
+    <button class="btn-social">
+      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.2l6.8-6.8C35.7 2.4 30.2 0 24 0 14.6 0 6.6 5.5 2.8 13.5l7.9 6.1C12.5 13.4 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.6 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4 7.2-10 7.2-17z"/><path fill="#FBBC05" d="M10.7 28.4c-.5-1.4-.7-2.9-.7-4.4s.2-3 .7-4.4l-7.9-6.1C1 16.5 0 20.1 0 24s1 7.5 2.8 10.5l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.2 0 11.5-2 15.3-5.5l-7.5-5.8c-2 1.4-4.6 2.2-7.8 2.2-6.2 0-11.5-3.9-13.3-9.5l-7.9 6.1C6.6 42.5 14.6 48 24 48z"/></svg>
+      Continue with Google
+    </button>
+
+    <div class="modal-divider"><hr><span>or</span><hr></div>
+
+    <div class="form-group">
+      <label>University Email</label>
+      <input type="email" placeholder="you@university.edu">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" placeholder="Enter password">
+    </div>
+
+    <button class="btn-primary btn-submit" onclick="handleAuth()">Log In →</button>
+
+    <div class="modal-switch">
+      Don't have an account? <a onclick="switchModal('login','register')">Create one free</a>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ REGISTER MODAL ══════════ -->
+<div class="modal-overlay" id="registerModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('register')">✕</button>
+    <div class="modal-title">Join UniConnect</div>
+    <div class="modal-sub">Free for students, postdocs, and professors</div>
+
+    <button class="btn-social">
+      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.2l6.8-6.8C35.7 2.4 30.2 0 24 0 14.6 0 6.6 5.5 2.8 13.5l7.9 6.1C12.5 13.4 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.6 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4 7.2-10 7.2-17z"/><path fill="#FBBC05" d="M10.7 28.4c-.5-1.4-.7-2.9-.7-4.4s.2-3 .7-4.4l-7.9-6.1C1 16.5 0 20.1 0 24s1 7.5 2.8 10.5l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.2 0 11.5-2 15.3-5.5l-7.5-5.8c-2 1.4-4.6 2.2-7.8 2.2-6.2 0-11.5-3.9-13.3-9.5l-7.9 6.1C6.6 42.5 14.6 48 24 48z"/></svg>
+      Sign up with Google
+    </button>
+
+    <div class="modal-divider"><hr><span>or</span><hr></div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>First Name</label>
+        <input type="text" placeholder="Arjun">
+      </div>
+      <div class="form-group">
+        <label>Last Name</label>
+        <input type="text" placeholder="Sharma">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>University Email</label>
+      <input type="email" placeholder="you@university.edu">
+    </div>
+
+    <div class="form-group">
+      <label>University / Institution</label>
+      <input type="text" placeholder="IIT Delhi, Oxford, MIT…">
+    </div>
+
+    <div class="form-group">
+      <label>I am a…</label>
+      <select>
+        <option>Undergraduate Student</option>
+        <option>Master's Student</option>
+        <option>PhD Student / Doctoral Researcher</option>
+        <option>Postdoctoral Researcher</option>
+        <option>Professor / Faculty</option>
+        <option>Research Staff</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Primary SDG Focus</label>
+      <select>
+        <option>SDG 1 — No Poverty</option>
+        <option>SDG 2 — Zero Hunger</option>
+        <option>SDG 3 — Good Health & Well-Being</option>
+        <option>SDG 4 — Quality Education</option>
+        <option>SDG 5 — Gender Equality</option>
+        <option>SDG 6 — Clean Water & Sanitation</option>
+        <option>SDG 7 — Affordable & Clean Energy</option>
+        <option>SDG 9 — Industry, Innovation & Infrastructure</option>
+        <option>SDG 11 — Sustainable Cities</option>
+        <option>SDG 13 — Climate Action</option>
+        <option>SDG 14 — Life Below Water</option>
+        <option>SDG 15 — Life on Land</option>
+        <option>SDG 17 — Partnerships for the Goals</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" placeholder="Create a secure password">
+    </div>
+
+    <button class="btn-primary btn-submit" onclick="handleAuth()">Create Account →</button>
+
+    <div class="modal-switch">
+      Already have an account? <a onclick="switchModal('register','login')">Log in here</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ── SDG DATA ── */
+  const sdgs = [
+    { num:1,  name:"No Poverty",               icon:"🏠", color:"#E5243B", count:142 },
+    { num:2,  name:"Zero Hunger",               icon:"🌾", color:"#DDA63A", count:98  },
+    { num:3,  name:"Good Health",               icon:"❤️", color:"#4C9F38", count:234 },
+    { num:4,  name:"Quality Education",         icon:"📚", color:"#C5192D", count:187 },
+    { num:5,  name:"Gender Equality",           icon:"⚖️", color:"#FF3A21", count:113 },
+    { num:6,  name:"Clean Water",               icon:"💧", color:"#26BDE2", count:156 },
+    { num:7,  name:"Clean Energy",              icon:"☀️", color:"#FCC30B", count:203 },
+    { num:8,  name:"Decent Work",               icon:"💼", color:"#A21942", count:89  },
+    { num:9,  name:"Innovation",                icon:"⚙️", color:"#FD6925", count:178 },
+    { num:10, name:"Reduced Inequalities",      icon:"🤝", color:"#DD1367", count:94  },
+    { num:11, name:"Sustainable Cities",        icon:"🏙️", color:"#FD9D24", count:167 },
+    { num:12, name:"Responsible Consumption",   icon:"♻️", color:"#BF8B2E", count:112 },
+    { num:13, name:"Climate Action",            icon:"🌍", color:"#3F7E44", count:298 },
+    { num:14, name:"Life Below Water",          icon:"🌊", color:"#0A97D9", count:134 },
+    { num:15, name:"Life on Land",              icon:"🌳", color:"#56C02B", count:119 },
+    { num:16, name:"Peace & Justice",           icon:"🕊️", color:"#00689D", count:76  },
+    { num:17, name:"Partnerships",              icon:"🌐", color:"#19486A", count:201 },
+  ];
+
+  /* Render SDG scroll strip */
+  const track = document.getElementById('sdgTrack');
+  const allPills = [...sdgs, ...sdgs].map(s =>
+    `<div class="sdg-pill" style="background:${s.color}20; border:1px solid ${s.color}40; color:${s.color}">
+      ${s.icon} SDG ${s.num}: ${s.name}
+    </div>`
+  ).join('');
+  track.innerHTML = allPills;
+
+  /* Render SDG cards */
+  const grid = document.getElementById('sdgCardsGrid');
+  grid.innerHTML = sdgs.map(s =>
+    `<div class="sdg-card" style="background:${s.color}" data-num="${s.num}" onclick="openModal('register')">
+      <div class="sdg-card-icon">${s.icon}</div>
+      <div class="sdg-card-num">SDG ${s.num}</div>
+      <div class="sdg-card-name">${s.name}</div>
+      <div class="sdg-card-count">${s.count} active projects →</div>
+    </div>`
+  ).join('');
+
+  /* ── PROFILE DATA ── */
+  const profiles = [
+    { init:"AS", name:"Arjun Sharma", role:"PhD Student", uni:"IIT Delhi", tags:["Climate","Data Science","SDG 13"], projects:4, color:"#3d6b5c" },
+    { init:"LM", name:"Laura Müller", role:"Professor", uni:"ETH Zürich", tags:["Clean Energy","Policy","SDG 7"], projects:12, color:"#2a5f8f" },
+    { init:"RK", name:"Rania Khalil", role:"Postdoc", uni:"AUC Cairo", tags:["Water","SDG 6","Remote Sensing"], projects:6, color:"#d4882a" },
+    { init:"PW", name:"Priya Wang", role:"MSc Student", uni:"NUS Singapore", tags:["Urban Planning","SDG 11"], projects:2, color:"#c4563a" },
+    { init:"JO", name:"James Osei", role:"Undergrad", uni:"Univ. of Ghana", tags:["Agriculture","SDG 2","IoT"], projects:1, color:"#5a4f8f" },
+    { init:"SL", name:"Sofia López", role:"PhD Student", uni:"UNAM Mexico", tags:["Biodiversity","SDG 15","GIS"], projects:3, color:"#3d7a6b" },
+    { init:"TN", name:"Tanaka Nkosi", role:"Professor", uni:"Univ. of Cape Town", tags:["Health Systems","SDG 3"], projects:9, color:"#8f3d5c" },
+    { init:"YC", name:"Yuki Chen", role:"Postdoc", uni:"Kyoto University", tags:["Renewable Energy","SDG 7","AI"], projects:5, color:"#5c7a3d" },
+  ];
+
+  const profGrid = document.getElementById('profilesGrid');
+  profGrid.innerHTML = profiles.map(p =>
+    `<div class="profile-card">
+      <div class="profile-top">
+        <div class="profile-ava" style="background:${p.color}">${p.init}</div>
+        <div>
+          <div class="profile-name">${p.name}</div>
+          <div class="profile-role">${p.role}</div>
+        </div>
+      </div>
+      <div class="profile-uni">🏛 ${p.uni}</div>
+      <div class="profile-tags">${p.tags.map(t=>`<span class="tag-chip">${t}</span>`).join('')}</div>
+      <div class="profile-footer">
+        <span class="profile-projects">${p.projects} project${p.projects>1?'s':''}</span>
+        <button class="btn-connect" onclick="openModal('register')">Connect</button>
+      </div>
+    </div>`
+  ).join('');
+
+  /* ── MODAL LOGIC ── */
+  function openModal(type) {
+    document.getElementById(type+'Modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal(type) {
+    document.getElementById(type+'Modal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function switchModal(from, to) {
+    closeModal(from);
+    setTimeout(() => openModal(to), 150);
+  }
+  function handleAuth() {
+    const overlay = document.querySelector('.modal-overlay.open');
+    if(!overlay) return;
+    const btn = overlay.querySelector('.btn-submit');
+    btn.textContent = '✓ Success! Redirecting…';
+    btn.style.background = '#3d6b5c';
+    setTimeout(() => {
+      closeModal(overlay.id.replace('Modal',''));
+      btn.textContent = btn.id === 'loginBtn' ? 'Log In →' : 'Create Account →';
+      btn.style.background = '';
+    }, 2000);
+  }
+
+  /* Close modal on overlay click */
+  document.querySelectorAll('.modal-overlay').forEach(el =>
+    el.addEventListener('click', e => { if(e.target === el) closeModal(el.id.replace('Modal','')); })
+  );
+
+  /* Close on Escape */
+  document.addEventListener('keydown', e => {
+    if(e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+  });
+
+  /* ── TAB SWITCH ── */
+  function switchTab(btn) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  /* ── HAMBURGER ── */
+  function toggleMenu() {
+    // Simple toggle for mobile — could expand to full mobile nav
+    const links = document.querySelector('.nav-links');
+    if(links.style.display === 'flex') {
+      links.style.display = 'none';
+    } else {
+      links.style.cssText = 'display:flex; flex-direction:column; position:fixed; top:72px; left:0; right:0; background:rgba(244,241,235,0.98); padding:20px; gap:4px; z-index:998; border-bottom:1px solid rgba(10,15,30,0.1);';
+    }
+  }
+
+  /* ── SCROLL ACTIVE NAV ── */
+  const sections = document.querySelectorAll('section[id]');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if(window.scrollY >= s.offsetTop - 100) current = s.getAttribute('id');
+    });
+    document.querySelectorAll('.nav-links a').forEach(a => {
+      a.classList.remove('active');
+      if(a.getAttribute('href') === '#'+current) a.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>
