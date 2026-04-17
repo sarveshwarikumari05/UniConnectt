@@ -5,7 +5,7 @@ const path = require("path");
 
 const app = express();
 
-/* MIDDLEWARE */
+/* This is a MIDDLEWARE */
 
 app.use(express.json());
 app.use(cors());
